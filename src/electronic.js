@@ -23,9 +23,9 @@ const ElectronicPage=()=>{
     return (
         <>
             <header>
-            <Navbar bg="light" expand="lg">
-                <Container>
-                    <Navbar.Brand href="/">Meteorological center</Navbar.Brand>
+            <Navbar bg="dark" variant='dark' expand="lg" style={{ height: '150px'}}>
+                <Container sm={4} >
+                    <Navbar.Brand  href="/">Meteorological center</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="me-auto">
@@ -52,12 +52,19 @@ const ElectronicPage=()=>{
                             water
                         </NavDropdown.Item>
                         </NavDropdown>
-                        <Navbar.Brand>
-                            {Page}({area})
-                        </Navbar.Brand>
+                        
                     </Nav>
                     </Navbar.Collapse>
-                    
+                </Container>
+
+                <Container sm={4} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <Navbar.Brand style={{ fontSize: '40px' }}>
+                        {Page}({area})
+                    </Navbar.Brand>
+                </Container>
+
+                <Container sm={4} >
+
                 </Container>
             </Navbar>
             </header>
