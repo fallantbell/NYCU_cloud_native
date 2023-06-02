@@ -11,7 +11,7 @@ const WaterPage=()=>{
     const red = 300
 
 
-    let test_data = [
+    const raw_data = [
         {
             name: "shiman",
             endtime: 15,
@@ -51,57 +51,45 @@ const WaterPage=()=>{
     }
 
     const handleAPI = (area) => {
-        
-        let body = {
-            "area": {area}
-        }
+        // fetch("/api/get_water")
+        // .then(res => res.json())
 
-        fetch("http://localhost:5000/api/water", {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: new Headers({
-                'Content-Type': 'application/json'
-            })
-        }).then(res => res.json())
-        .then(raw_data => {
+        let waterinfo = [];
+        for(let i=0;i<raw_data[0].time.length;i++){ // 過去7小時
+            let tmp={};
+            let t = raw_data[0].endtime-raw_data[0].time.length+i+1;
+            if(t<=0){
+                t = t+24;
+            }
+            tmp["time"]=t.toString()+":00";
+            for(let j=0;j<raw_data.length;j++){ // 所有水庫
+                tmp[raw_data[j].name]=raw_data[j].time[i];
 
-            let waterinfo = [];
-            for(let i=0;i<raw_data[0].time.length;i++){ // 過去7小時
-                let tmp={};
-                let t = raw_data[0].endtime-raw_data[0].time.length+i+1;
-                if(t<=0){
-                    t = t+24;
-                }
-                tmp["time"]=t.toString()+":00";
-                for(let j=0;j<raw_data.length;j++){ // 所有水庫
-                    tmp[raw_data[j].name]=raw_data[j].time[i];
-
-                    if(i===raw_data[0].time.length-1){ // 水庫當前水量
-                        if(raw_data[j].time[i]>yellow){
-                            raw_data[j].color = "#0EC23F"; // 綠色 健康水位
-                        }
-                        if(raw_data[j].time[i]<=yellow){
-                            raw_data[j].color = "#E4CC08"; // 黃色
-                        }
-                        if(raw_data[j].time[i]<=red){
-                            raw_data[j].color = "#EA1B0C"; // 紅色 危險水位
-                        }
+                if(i===raw_data[0].time.length-1){ // 水庫當前水量
+                    if(raw_data[j].time[i]>yellow){
+                        raw_data[j].color = "#0EC23F"; // 綠色 健康水位
+                    }
+                    if(raw_data[j].time[i]<=yellow){
+                        raw_data[j].color = "#E4CC08"; // 黃色
+                    }
+                    if(raw_data[j].time[i]<=red){
+                        raw_data[j].color = "#EA1B0C"; // 紅色 危險水位
                     }
                 }
-                
-                waterinfo.push(tmp);
-                console.log({tmp});
             }
             
-            console.log({waterinfo})
-            setrawdata(raw_data)
-            setWaterinfo(waterinfo)
-        })
+            waterinfo.push(tmp);
+            console.log({tmp});
+        }
+        
+        console.log({waterinfo})
+        setrawdata(raw_data)
+        setWaterinfo(waterinfo)
 
     }
 
     useEffect(() => {
-        handleAPI("north");
+        handleAPI();
       }, []);
 
     return (
@@ -166,9 +154,6 @@ const WaterPage=()=>{
                                             <div style={{ color: 'red'}}>(warning!!!)</div>
                                         ) : null}
                                     </h4>
-
-                                    <div style={{fontSize:15,fontFamily:"Microsoft JhengHei",height:"15px"} }> 蓄水量(萬立方公尺) </div>
-                                    <div style={{height:"15px"} }></div>
                                     
                                     <ResponsiveContainer width="100%" height={300}>
                                     <AreaChart
@@ -190,16 +175,8 @@ const WaterPage=()=>{
                                         <Area type="monotone" dataKey={item.name} stroke={item.color} fill={item.color} />
                                     </AreaChart>
                                     </ResponsiveContainer>
-
-                                    <div style={{height:"15px",width: '100%',display: 'flex', alignItems: 'center'} }> 
-                                        <div style={{fontSize: 20,fontFamily:"Microsoft JhengHei",width: '100%',display: 'flex', alignItems: 'center',justifyContent:"center"}}>
-                                            水情時間
-                                        </div>
-                                    </div>
                                 </div>
-                                
                             ))}
-                            
                             
 
                         </div>
