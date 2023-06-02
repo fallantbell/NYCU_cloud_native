@@ -5,7 +5,7 @@ import { Button,Container,Row,Col,Navbar, Nav,NavDropdown} from 'react-bootstrap
 
 const ElectronicPage=()=>{
 
-    let Page = "Electronic"
+    let Page = "Electroniccc"
     const [area, setArea] = useState("竹科");
 
     const handleDropdownSelect = (item) => {
