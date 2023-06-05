@@ -5,7 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const WaterPage=()=>{
 
-    let Page = "Water"
+    let Page = "Reservoir"
     
     const yellow = 30
     const red = 10
@@ -153,7 +153,7 @@ const WaterPage=()=>{
                             electronic
                         </NavDropdown.Item>
                         <NavDropdown.Item href="/water">
-                            water
+                            reservoir
                         </NavDropdown.Item>
                         </NavDropdown>
                         
