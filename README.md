@@ -1,5 +1,8 @@
 # This is NYCU cloud native final frontend  
 
+## - 進入畫面
+![image](https://github.com/fallantbell/NYCU_cloud_native/blob/main/images/entry.gif)
+
 ## - 地震畫面 
 ![image](https://github.com/fallantbell/NYCU_cloud_native/blob/main/images/earthquake.png)
 
