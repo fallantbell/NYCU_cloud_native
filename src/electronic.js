@@ -1,18 +1,46 @@
-import React, {useState}from 'react';
+import React, {useState,useEffect}from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Button,Container,Row,Col,Navbar, Nav,NavDropdown} from 'react-bootstrap';
 // import Chart from 'react-google-charts'
 import Chart from 'react-apexcharts'
-const raw_data = [
-{
-    name: "供給", //will be displayed on the y-axis
-    data: [1750.5]
-},
-{
-    name: "需求", //will be displayed on the y-axis
-    data: [1609.5]
-}
-];
+
+let warning = true
+// const res = {
+//     "data": [
+//         {
+//             "區": "北",
+//             "時間": [
+//             "2023-04-03 00:00:00"
+//             ],
+//             "供電(萬瓩)": [
+//             1043.8199999999999
+//             ],
+//             "負載(萬瓩)": [
+//             919.881
+//             ]
+//         }
+//     ]
+// }
+// let Data = res['data']
+// let raw_data = []
+// let tmp_data = {}
+// tmp_data["name"] = "供電"
+// tmp_data["data"] = Data[0]["供電(萬瓩)"]
+// raw_data.push(tmp_data)
+// tmp_data = {}
+// tmp_data["name"] = "負載"
+// tmp_data["data"] = Data[0]["負載(萬瓩)"]
+// raw_data.push(tmp_data)
+
+// if(raw_data[0]["data"][0] <= raw_data[1]["data"][0]){
+//     warning = true
+// }  
+// else {
+//     warning = false
+// }
+    
+// console.log("raw_data",warning)
+
 const options = {
 chart: {
     id: "bar",
@@ -41,8 +69,16 @@ plotOptions: {
 const ElectronicPage=()=>{
 
     let Page = "Electronic"
+    // const [electricity, setElectricity] = useState({
+    //     year_to: 2022,
+    //     month_to: 6,
+    //     day_to: 6,
+    //     hour_to: 12,
+    //     past_days: 1,
+    //     power_plant_regions: ['北']
+    // })
     const [area, setArea] = useState("竹科");
-
+    const [rawdata, setrawdata] = useState([]);
     const handleDropdownSelect = (item) => {
         if(item==="north"){
             setArea("竹科");
@@ -53,8 +89,63 @@ const ElectronicPage=()=>{
         else{
             setArea("南科");
         }
+        handleAPI(item)
     }
 
+    
+    const handleAPI = (area) => {
+        const date = new Date();
+        let power_plant_regions = []
+        if(area==="north"){
+            power_plant_regions = ["北"]
+        }
+        else if(area ==="center"){
+            power_plant_regions = ["中"]
+        }
+        else{
+            power_plant_regions = ["南"]
+        }
+        let body = {
+            year_to: 2023,
+            month_to: 4,
+            day_to: 30,
+            hour_to: 12,
+            past_days: 1,
+            power_plant_regions: power_plant_regions
+        }
+        
+        fetch("http://127.0.0.1:8551/electricity_fetch/", {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: new Headers({
+                'Content-Type': 'application/json'
+            })
+        }).then(res => res.json())
+        .then(res => {
+            console.log("res",res)         
+            let Data = res['data']
+            let raw_data = []
+            let tmp_data = {}
+            tmp_data["name"] = "供電"
+            tmp_data["data"] = Data[0]["供電(萬瓩)"]
+            raw_data.push(tmp_data)
+            tmp_data = {}
+            tmp_data["name"] = "負載"
+            tmp_data["data"] = Data[0]["負載(萬瓩)"]
+            raw_data.push(tmp_data)
+            if(raw_data[0]["data"][0] <= raw_data[1]["data"][0])
+                warning = true
+            else 
+                warning = false
+            setrawdata(raw_data)
+        })
+
+    }
+
+
+    useEffect(() => {
+        handleAPI("north");
+      }, []);
     return (
         <>
             <header>
@@ -84,7 +175,7 @@ const ElectronicPage=()=>{
                             electronic
                         </NavDropdown.Item>
                         <NavDropdown.Item href="/water">
-                            water
+                            reservoir
                         </NavDropdown.Item>
                         </NavDropdown>
                         
@@ -104,18 +195,22 @@ const ElectronicPage=()=>{
             </Navbar>
             </header>
             <main>
-            <Container>
+            
+            <Container fluid style={{ backgroundColor: 'azure', height: '85vh'}}>
                 <Row >
-                    <div className="container mt-5">
-                    <h2>電力供需狀況(單位: 萬瓩)</h2>
-                    <Chart options={options} type="bar" series={raw_data } width="80%" />
-                    </div>
+                    <h2 style={{ display: 'flex', alignItems: 'center' }}>
+                        電力供需狀況(單位: 萬瓩)
+                        {warning===true ? (
+                            <div style={{ color: 'red'}}>(warning!!!)</div>
+                        ) : null}
+                    </h2>
                 </Row>
-                {/* <Row>
-                    <Col sm>sm=true</Col>
-                    <Col sm>sm=true</Col>
-                    <Col sm>sm=true</Col>
-                </Row> */}
+                <Row >
+                    <div className="container mt-5">                   
+                        <Chart options={options} type="bar" series={rawdata} width="85%" />
+                    </div>
+
+                </Row>
             </Container>
                   
             </main>

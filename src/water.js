@@ -46,15 +46,15 @@ const WaterPage=()=>{
         let PH = 7;
         
         let body = {
-            year_to: date.getFullYear(),
-            month_to: date.getMonth() + 1,
-            day_to: date.getDate(),
-            hour_to: date.getHours(),
+            year_to: 2023,
+            month_to: 6,
+            day_to: 6,
+            hour_to: 12,
             past_hours: PH,
             reservoir_names: reservoir_name
         }
 
-        fetch("http://140.113.194.4:5000/reservoir_fetch/", {
+        fetch("http://127.0.0.1:7000/reservoir_fetch/", {
             method: 'POST',
             body: JSON.stringify(body),
             headers: new Headers({
@@ -64,6 +64,8 @@ const WaterPage=()=>{
         .then(res => {
             let Data = res['data']
 
+            console.log("Data",Data)
+
             let raw_data = []
             for(let i=0;i<Data.length;i++){ // 幾個水庫資料
                 let tmp_data = {}
@@ -71,13 +73,23 @@ const WaterPage=()=>{
                 tmp_data['endtime'] = date.getHours()
                 let tmp_data_list = []
                 for(let j=0;j<PH;j++){
-                    tmp_data_list.push(Data[i]["有效蓄水量(萬立方公尺)"][j])
+                    if(j>=Data[i]["有效蓄水量(萬立方公尺)"].length){
+                        tmp_data_list.push(Data[i]["有效蓄水量(萬立方公尺)"][Data[i]["有效蓄水量(萬立方公尺)"].length-1])
+                    }
+                    else{
+                        tmp_data_list.push(Data[i]["有效蓄水量(萬立方公尺)"][j])
+                    }
                 }
                 tmp_data['time'] = tmp_data_list
                 tmp_data['color'] = ""
                 tmp_data_list = []
                 for(let j=0;j<PH;j++){
-                    tmp_data_list.push(Data[i]["蓄水百分比(%)"][j])
+                    if(j>=Data[i]["蓄水百分比(%)"].length){
+                        tmp_data_list.push(Data[i]["蓄水百分比(%)"][Data[i]["有效蓄水量(萬立方公尺)"].length-1])
+                    }
+                    else{
+                        tmp_data_list.push(Data[i]["蓄水百分比(%)"][j])
+                    }
                 }
                 tmp_data['pencentage'] = tmp_data_list
                 raw_data.push(tmp_data)
